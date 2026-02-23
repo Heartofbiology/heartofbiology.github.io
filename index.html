@@ -22,6 +22,7 @@
   <button onclick="verifyOTP()">Verify OTP</button>
 
   <p id="status"></p>
+  <div id="recaptcha-container"></div>
 </section>
 
 <header>
@@ -128,11 +129,10 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ✅ Invisible reCAPTCHA
-  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-    'login',
-    { size: 'invisible' }
-  );
+window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+  'recaptcha-container',
+  { size: 'invisible' }
+);
 
   function sendOTP() {
     const phone = document.getElementById("phone").value;
