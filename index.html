@@ -106,44 +106,40 @@
   <p>© 2026 HOBs International Pvt. Ltd. | All Rights Reserved</p>
 </footer>
 
-<!-- 🔥 FIREBASE SDKs -->
+<!-- 🔥 FIREBASE COMPAT SDKs (CORRECT FOR GITHUB PAGES) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // Firebase config
- // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+  // ✅ Firebase Configuration (COMPAT MODE)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBzWCNM8N7LVOwWKVoTAu7a48p1z8hCb0M",
+    authDomain: "hobs-auth.firebaseapp.com",
+    projectId: "hobs-auth",
+    storageBucket: "hobs-auth.appspot.com",
+    messagingSenderId: "498840613090",
+    appId: "1:498840613090:web:5289ffd2607e921e1e6ebb"
+  };
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBzWCNM8N7LVOwWKVoTAu7a48p1z8hCb0M",
-  authDomain: "hobs-auth.firebaseapp.com",
-  projectId: "hobs-auth",
-  storageBucket: "hobs-auth.firebasestorage.app",
-  messagingSenderId: "498840613090",
-  appId: "1:498840613090:web:5289ffd2607e921e1e6ebb"
-};
+  // ✅ Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // Invisible reCAPTCHA
-  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('login', {
-    size: 'invisible'
-  });
+  // ✅ Invisible reCAPTCHA
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    'login',
+    { size: 'invisible' }
+  );
 
   function sendOTP() {
     const phone = document.getElementById("phone").value;
     auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
       .then(result => {
         window.confirmationResult = result;
-        document.getElementById("status").innerText = "OTP sent!";
+        document.getElementById("status").innerText = "OTP sent successfully";
       })
       .catch(error => {
         document.getElementById("status").innerText = error.message;
@@ -158,12 +154,12 @@ const app = initializeApp(firebaseConfig);
 
         db.collection("clients").doc(user.uid).set({
           phone: user.phoneNumber,
-          time: new Date()
+          loginTime: new Date()
         });
 
         document.getElementById("status").innerText = "Login successful!";
       })
-      .catch(error => {
+      .catch(() => {
         document.getElementById("status").innerText = "Invalid OTP";
       });
   }
@@ -171,4 +167,3 @@ const app = initializeApp(firebaseConfig);
 
 </body>
 </html>
-
