@@ -113,17 +113,23 @@
 
 <script>
   // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBzWCNM8ZLVOWWKVoTAu7a48pIz8hCb0M",
-    authDomain: "hobs-auth.firebaseapp.com",
-    projectId: "hobs-auth",
-    storageBucket: "hobs-auth.firebasestorage.app",
-    messagingSenderId: "498840613090",
-    appId: "1:498840613090:web:5289ffd2607e921e1e6ebb"
-  };
+ // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-  firebase.initializeApp(firebaseConfig);
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBzWCNM8N7LVOwWKVoTAu7a48p1z8hCb0M",
+  authDomain: "hobs-auth.firebaseapp.com",
+  projectId: "hobs-auth",
+  storageBucket: "hobs-auth.firebasestorage.app",
+  messagingSenderId: "498840613090",
+  appId: "1:498840613090:web:5289ffd2607e921e1e6ebb"
+};
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
