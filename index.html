@@ -13,16 +13,17 @@
 <section id="login">
   <h2>Client Login</h2>
 
-  <input type="text" id="phone" placeholder="+91XXXXXXXXXX">
-  <button onclick="sendOTP()">Send OTP</button>
+  <input type="text" id="phone" placeholder="+91XXXXXXXXXX" required>
 
   <br><br>
 
-  <input type="text" id="otp" placeholder="Enter OTP">
-  <button onclick="verifyOTP()">Verify OTP</button>
+  <input type="email" id="email" placeholder="Enter your email" style="display:none;" required>
+
+  <br><br>
+
+  <button onclick="sendEmailOTP()">Send Email OTP</button>
 
   <p id="status"></p>
-  <div id="recaptcha-container"></div>
 </section>
 
 <header>
@@ -113,7 +114,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // ✅ Firebase Configuration (COMPAT MODE)
   const firebaseConfig = {
     apiKey: "AIzaSyBzWCNM8N7LVOwWKVoTAu7a48p1z8hCb0M",
     authDomain: "hobs-auth.firebaseapp.com",
@@ -123,47 +123,65 @@
     appId: "1:498840613090:web:5289ffd2607e921e1e6ebb"
   };
 
-  // ✅ Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-  'recaptcha-container',
-  { size: 'invisible' }
-);
+  const actionCodeSettings = {
+    url: window.location.href,
+    handleCodeInApp: true
+  };
 
-  function sendOTP() {
+  document.getElementById("phone").addEventListener("input", () => {
+    document.getElementById("email").style.display = "block";
+  });
+
+  function sendEmailOTP() {
     const phone = document.getElementById("phone").value;
-    auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
-      .then(result => {
-        window.confirmationResult = result;
-        document.getElementById("status").innerText = "OTP sent successfully";
+    const email = document.getElementById("email").value;
+
+    if (!phone || !email) {
+      document.getElementById("status").innerText = "Enter phone and email";
+      return;
+    }
+
+    window.localStorage.setItem("phone", phone);
+    window.localStorage.setItem("email", email);
+
+    auth.sendSignInLinkToEmail(email, actionCodeSettings)
+      .then(() => {
+        document.getElementById("status").innerText =
+          "OTP link sent to your email. Check inbox.";
       })
       .catch(error => {
         document.getElementById("status").innerText = error.message;
       });
   }
 
-  function verifyOTP() {
-    const otp = document.getElementById("otp").value;
-    window.confirmationResult.confirm(otp)
+  if (auth.isSignInWithEmailLink(window.location.href)) {
+    const email = window.localStorage.getItem("email");
+    const phone = window.localStorage.getItem("phone");
+
+    auth.signInWithEmailLink(email, window.location.href)
       .then(result => {
         const user = result.user;
 
         db.collection("clients").doc(user.uid).set({
-          phone: user.phoneNumber,
+          phone: phone,
+          email: email,
           loginTime: new Date()
         });
 
-        document.getElementById("status").innerText = "Login successful!";
+        document.getElementById("status").innerText =
+          "Login successful. We will contact you shortly.";
       })
-      .catch(() => {
-        document.getElementById("status").innerText = "Invalid OTP";
+      .catch(error => {
+        document.getElementById("status").innerText = error.message;
       });
   }
 </script>
+
 
 </body>
 </html>
