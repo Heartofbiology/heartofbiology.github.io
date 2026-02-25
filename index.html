@@ -9,17 +9,14 @@
 
 <body>
 
-<!-- ================= LOGIN SECTION ================= -->
-<section id="login">
-  <h2>Client Login</h2>
+<!-- ================= CONTACT FORM ================= -->
+<section id="contact-form">
+  <h2>Get In Touch</h2>
 
   <input type="text" id="phone" placeholder="+91XXXXXXXXXX" required>
   <br><br>
 
-  <input type="email" id="email" placeholder="Enter your email" required>
-  <br><br>
-
-  <button onclick="sendLoginLink()">Send Login Link</button>
+  <button onclick="submitPhone()">Submit</button>
 
   <p id="status"></p>
 </section>
@@ -81,7 +78,6 @@
 
 <!-- ================= FIREBASE SDKs ================= -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
@@ -97,59 +93,27 @@
 
   firebase.initializeApp(firebaseConfig);
 
-  const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ✅ REQUIRED FOR EMAIL LINK LOGIN
-  const actionCodeSettings = {
-    url: "https://heartofbiology.github.io/",
-    handleCodeInApp: true
-  };
-
-  // ================= SEND LOGIN LINK =================
-  function sendLoginLink() {
+  // store submitted phone numbers
+  function submitPhone() {
     const phone = document.getElementById("phone").value;
-    const email = document.getElementById("email").value;
-
-    if (!phone || !email) {
-      document.getElementById("status").innerText = "Enter phone and email";
+    if (!phone) {
+      document.getElementById("status").innerText = "Please enter your phone number.";
       return;
     }
 
-    localStorage.setItem("loginPhone", phone);
-    localStorage.setItem("loginEmail", email);
-
-    auth.sendSignInLinkToEmail(email, actionCodeSettings)
-      .then(() => {
-        document.getElementById("status").innerText =
-          "Login link sent. Check inbox & spam.";
-      })
-      .catch(error => {
-        document.getElementById("status").innerText = error.message;
-      });
-  }
-
-  // ================= HANDLE EMAIL LINK =================
-  if (auth.isSignInWithEmailLink(window.location.href)) {
-    const email = localStorage.getItem("loginEmail");
-    const phone = localStorage.getItem("loginPhone");
-
-    auth.signInWithEmailLink(email, window.location.href)
-      .then(result => {
-        const user = result.user;
-
-        db.collection("clients").doc(user.uid).set({
-          email: email,
-          phone: phone,
-          loginTime: new Date()
-        });
-
-        document.getElementById("status").innerText =
-          "Login successful. We will contact you shortly.";
-      })
-      .catch(error => {
-        document.getElementById("status").innerText = error.message;
-      });
+    db.collection("submissions").add({
+      phone: phone,
+      timestamp: new Date()
+    })
+    .then(() => {
+      document.getElementById("status").innerText = "Phone number received – thank you!";
+      document.getElementById("phone").value = "";
+    })
+    .catch(error => {
+      document.getElementById("status").innerText = error.message;
+    });
   }
 </script>
 
