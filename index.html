@@ -9,23 +9,22 @@
 
 <body>
 
-<!-- LOGIN SECTION -->
+<!-- ================= LOGIN SECTION ================= -->
 <section id="login">
   <h2>Client Login</h2>
 
   <input type="text" id="phone" placeholder="+91XXXXXXXXXX" required>
-
   <br><br>
 
-  <input type="email" id="email" placeholder="Enter your email" style="display:none;" required>
-
+  <input type="email" id="email" placeholder="Enter your email" required>
   <br><br>
 
-  <button onclick="sendEmailOTP()">Send Email OTP</button>
+  <button onclick="sendLoginLink()">Send Login Link</button>
 
   <p id="status"></p>
 </section>
 
+<!-- ================= MAIN CONTENT ================= -->
 <header>
   <h1>HOBs International Pvt. Ltd.</h1>
   <p>From Idea to Prototype</p>
@@ -41,8 +40,8 @@
 <section id="home">
   <h2>Welcome</h2>
   <p>
-    HOBs International Pvt. Ltd. supports students, innovators, and early-stage startups
-    in transforming ideas into validated concepts and prototype-level designs.
+    We support students, innovators, and startups in transforming ideas
+    into validated concepts and prototype-level designs.
   </p>
 </section>
 
@@ -51,69 +50,42 @@
 
   <div class="card">
     <h3>Idea Validation</h3>
-    <p>Concept review, feasibility analysis, and improvement suggestions.</p>
-    <p><strong>₹299</strong></p>
+    <p>₹299</p>
   </div>
 
   <div class="card">
     <h3>Project Design</h3>
-    <p>Research background, system architecture, design documentation, and PPT.</p>
-    <p><strong>₹1,499</strong></p>
+    <p>₹1,499</p>
   </div>
 
   <div class="card">
     <h3>Prototype Guidance</h3>
-    <p>Concept-to-prototype roadmap, tools, components, and simulations.</p>
-    <p><strong>₹2,999</strong></p>
+    <p>₹2,999</p>
   </div>
 
   <div class="card">
     <h3>Complete Innovation Support</h3>
-    <p>End-to-end idea validation, design, prototype planning, and presentation prep.</p>
-    <p><strong>₹4,999</strong></p>
+    <p>₹4,999</p>
   </div>
-</section>
-
-<section id="about">
-  <h2>About Us</h2>
-  <p>
-    HOBs International Pvt. Ltd. is an innovation-focused guidance company providing
-    concept development, system design, and prototype planning support.
-  </p>
 </section>
 
 <section id="contact">
   <h2>Contact</h2>
-  <p>Email: <strong>heartofbiology22@gmail.com</strong></p>
-  <p>WhatsApp: <strong>+91 9345504141</strong></p>
-</section>
-
-<section id="disclaimer">
-  <h2>Disclaimer & IP Policy</h2>
-  <p>
-    We provide guidance, design, planning, and prototype development for conceptual,
-    academic, research, and lab-scale purposes only.
-  </p>
-  <p>
-    We do not manufacture or certify products. Prototypes are non-commercial and non-certified.
-  </p>
-  <p>
-    Intellectual Property (IP) remains with the client for three (3) years from project completion.
-    If not commercialized or legally protected within this period, HOBs International Pvt. Ltd.
-    may reuse the concept without claiming original authorship.
-  </p>
+  <p>Email: heartofbiology22@gmail.com</p>
+  <p>WhatsApp: +91 9345504141</p>
 </section>
 
 <footer>
-  <p>© 2026 HOBs International Pvt. Ltd. | All Rights Reserved</p>
+  <p>© 2026 HOBs International Pvt. Ltd.</p>
 </footer>
 
-<!-- 🔥 FIREBASE COMPAT SDKs (CORRECT FOR GITHUB PAGES) -->
+<!-- ================= FIREBASE SDKs ================= -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+  // 🔐 FIREBASE CONFIG (PASTE NEW KEY)
   const firebaseConfig = {
     apiKey: "AIzaSyBzWCNM8N7LVOwWKVoTAu7a48p1z8hCb0M",
     authDomain: "hobs-auth.firebaseapp.com",
@@ -128,16 +100,14 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  // ✅ REQUIRED FOR EMAIL LINK LOGIN
   const actionCodeSettings = {
-    url: window.location.href,
+    url: "https://heartofbiology.github.io/",
     handleCodeInApp: true
   };
 
-  document.getElementById("phone").addEventListener("input", () => {
-    document.getElementById("email").style.display = "block";
-  });
-
-  function sendEmailOTP() {
+  // ================= SEND LOGIN LINK =================
+  function sendLoginLink() {
     const phone = document.getElementById("phone").value;
     const email = document.getElementById("email").value;
 
@@ -146,30 +116,31 @@
       return;
     }
 
-    window.localStorage.setItem("phone", phone);
-    window.localStorage.setItem("email", email);
+    localStorage.setItem("loginPhone", phone);
+    localStorage.setItem("loginEmail", email);
 
     auth.sendSignInLinkToEmail(email, actionCodeSettings)
       .then(() => {
         document.getElementById("status").innerText =
-          "OTP link sent to your email. Check inbox.";
+          "Login link sent. Check inbox & spam.";
       })
       .catch(error => {
         document.getElementById("status").innerText = error.message;
       });
   }
 
+  // ================= HANDLE EMAIL LINK =================
   if (auth.isSignInWithEmailLink(window.location.href)) {
-    const email = window.localStorage.getItem("email");
-    const phone = window.localStorage.getItem("phone");
+    const email = localStorage.getItem("loginEmail");
+    const phone = localStorage.getItem("loginPhone");
 
     auth.signInWithEmailLink(email, window.location.href)
       .then(result => {
         const user = result.user;
 
         db.collection("clients").doc(user.uid).set({
-          phone: phone,
           email: email,
+          phone: phone,
           loginTime: new Date()
         });
 
@@ -181,7 +152,6 @@
       });
   }
 </script>
-
 
 </body>
 </html>
