@@ -13,6 +13,9 @@
 <section id="contact-form">
   <h2>Get In Touch</h2>
 
+  <input type="text" id="name" placeholder="Your name" required>
+  <br><br>
+
   <input type="text" id="phone" placeholder="+91XXXXXXXXXX" required>
   <br><br>
 
@@ -97,18 +100,21 @@
 
   // store submitted phone numbers
   function submitPhone() {
+    const name = document.getElementById("name").value;
     const phone = document.getElementById("phone").value;
-    if (!phone) {
-      document.getElementById("status").innerText = "Please enter your phone number.";
+    if (!name || !phone) {
+      document.getElementById("status").innerText = "Please enter your name and phone number.";
       return;
     }
 
     db.collection("submissions").add({
+      name: name,
       phone: phone,
       timestamp: new Date()
     })
     .then(() => {
-      document.getElementById("status").innerText = "Phone number received – thank you!";
+      document.getElementById("status").innerText = "Information received – thank you!";
+      document.getElementById("name").value = "";
       document.getElementById("phone").value = "";
     })
     .catch(error => {
