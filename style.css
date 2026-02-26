@@ -69,3 +69,17 @@ footer {
 .team-member p {
     text-align: center;
 }
+
+/* grid container for team members; allows up to six cards in a responsive layout */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* smaller vertical margins on cards inside grid to maintain consistent spacing */
+.team-grid .card {
+    margin: 0;
+}
+
