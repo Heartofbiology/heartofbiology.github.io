@@ -49,3 +49,19 @@ footer {
     text-align: center;
     padding: 15px;
 }
+
+/* team section styling */
+.profile-photo {
+    max-width: 200px;
+    border-radius: 50%;
+    display: block;
+    margin: 10px auto;
+}
+
+.team-member h3 {
+    text-align: center;
+}
+
+.team-member p {
+    text-align: center;
+}
